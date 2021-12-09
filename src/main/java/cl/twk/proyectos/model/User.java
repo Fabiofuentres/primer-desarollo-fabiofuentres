@@ -1,28 +1,36 @@
-
 package cl.twk.proyectos.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+
 @Entity
-@Table(name= "usuarios")
-public class User implements Serializable{
+@Table(name = "usuarios")
+public class User implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3948863914143345070L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userID;
+	private Long userId;
 	
 	@Column(name = "username", nullable = false)
 	private String username;
@@ -30,7 +38,7 @@ public class User implements Serializable{
 	@Column(name = "password", nullable = false)
 	private String password;
 	
-	@Column(name = "name")
+	@Column(name = "name", nullable = false)
 	private String name;
 	
 	@Column(name = "lastName")
@@ -42,18 +50,22 @@ public class User implements Serializable{
 	@Column(name = "address")
 	private String address;
 	
-	@Column(name = "creationDate")
+	@CreatedDate
 	private Date creationDate;
 	
-	@Column(name = "updateDate")
+	@UpdateTimestamp
 	private Date updateDate;
-
-	public Long getUserID() {
-		return userID;
+	
+	@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+	@JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(updatable = true, name = "usuarios", referencedColumnName = "userId"), inverseJoinColumns = @JoinColumn(updatable = true, name = "authority", referencedColumnName = "idAuthority"))
+	private Set<Authority> authority;
+	
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setUserID(Long userID) {
-		this.userID = userID;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public String getUsername() {
@@ -120,4 +132,11 @@ public class User implements Serializable{
 		this.updateDate = updateDate;
 	}
 
+	public Set<Authority> getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(Set<Authority> authority) {
+		this.authority = authority;
+	}
 }
